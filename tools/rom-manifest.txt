@@ -1,0 +1,15 @@
+# MAME driver: starwars (Atari, set 1), as defined by the current MAME driver.
+# filename                         bytes  sha1
+136021.214.1f                       8192  c1d3637cb31ece0890c25f6122d6bcd27e6ffe0c
+136021.102.1hj                      8192  f8943b67f2ea032ab9538084756ba86f892be5ca
+136021.203.1jk                      8192  dd53b643be856787bbc4da63e5eb132f98f623c3
+136021.104.1kl                      8192  981b505d6e06d7149f8bcb3e81e4d0c790f2fc86
+136021.206.1m                       8192  4960f4446271316e3f730eeb2531dbc702947395
+136021-105.1l                       4096  032c933fd94a6b0b294beee29159a24494ae969b
+136021-107.1jk                      8192  c38661b2b846fe93487eef09ca3cda19c44f08a0
+136021-208.1h                       8192  c858ae1702efdd48615453ab46e488848891d139
+136021-109.4b                        256  184231c7baef598294860a7d2b8a23798c5c7da6
+136021-110.7h                       1024  d247cbb0afb4538d5161f8ce9eab337cdb3f2da4
+136021-111.7j                       1024  f3420c6e15602956fd94982a5d8d4ddd015ed977
+136021-112.7k                       1024  4dcf5153221feca329b8e8d199bd4fc00b151d9c
+136021-113.7l                       1024  e13541b09d1724204fdb171528e9a1c83c799c1c
