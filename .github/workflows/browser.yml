@@ -17,8 +17,8 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           git clone --depth 1 https://github.com/emscripten-core/emsdk.git
-          ./emsdk/emsdk install latest
-          ./emsdk/emsdk activate latest
+          ./emsdk/emsdk install 3.1.35
+          ./emsdk/emsdk activate 3.1.35
           echo "${{ runner.temp }}/emsdk" >> "$GITHUB_PATH"
           echo "EMSDK=${{ runner.temp }}/emsdk" >> "$GITHUB_ENV"
 
@@ -51,6 +51,7 @@ jobs:
           sleep 2
           curl --fail --silent http://127.0.0.1:8000/index.html >/dev/null
           curl --fail --silent http://127.0.0.1:8000/starwars-web.js >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/starwars-web.wasm >/dev/null
           curl --fail --silent http://127.0.0.1:8000/roms/starwars.zip >/dev/null
 
       - name: Upload emulator-only browser assets
@@ -62,3 +63,4 @@ jobs:
             web/mame-loader.js
             web/README.md
             web/starwars-web.js
+            web/starwars-web.wasm
