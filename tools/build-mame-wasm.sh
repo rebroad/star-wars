@@ -24,13 +24,20 @@ if [ "$webassembly" = 1 ]; then
 else
     ldopts='-s FORCE_FILESYSTEM=1 -s WARN_ON_UNDEFINED_SYMBOLS=0'
 fi
+# The fork has sources that include headers as "osd/..." while its generated
+# projects only add src/osd.  Keep the fix in this wrapper so the dependency
+# checkout remains untouched and callers can still add their own flags.
+source_include="-I$mame_source/src"
+cflags="${CFLAGS:-} $source_include"
+cxxflags="${CXXFLAGS:-} $source_include"
 emmake make -j"$make_jobs" \
     SUBTARGET="$subtarget" \
     DRIVERS="$driver" \
     WEBASSEMBLY="$webassembly" \
     TOOLS=0 REGENIE=1 NOWERROR=1 \
     SYMBOLS=0 SYMLEVEL=0 STRIP_SYMBOLS=1 NO_OPENGL=1 \
-    config="$mame_config" LDOPTS="$ldopts"
+    config="$mame_config" LDOPTS="$ldopts" \
+    CFLAGS="$cflags" CXXFLAGS="$cxxflags"
 mkdir -p "$web_output"
 cp "$subtarget.js" "$web_output/starwars-web.js"
 if [ "$webassembly" = 1 ]; then
