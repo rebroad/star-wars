@@ -13,7 +13,7 @@ command -v emmake >/dev/null 2>&1 || {
 cd "$mame_source"
 emmake make -j2 SUBTARGET=starwars-web \
     SOURCES=src/mame/atari/starwars.cpp \
-    TARGETOS=wasm WEBASSEMBLY="$webassembly"
+    WEBASSEMBLY="$webassembly"
 mkdir -p "$web_output"
 cp starwars-web.js "$web_output/"
 if [ "$webassembly" = 1 ]; then
