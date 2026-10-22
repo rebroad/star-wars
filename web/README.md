@@ -8,11 +8,9 @@ vector display, sound, mathbox, and controls.
 
 1. Obtain a MAME source checkout outside this repository and install
    Emscripten.
-2. Run `tools/build-roms.sh`, then copy
-   `roms-built/starwars1.zip` to `web/roms/starwars.zip`.
-3. Run `MAME_SOURCE=/path/to/mame tools/build-mame-wasm.sh`; it writes the
-   ASM.js bundle beside this page. Set `WEBASSEMBLY=1` only when WASM is
-   preferred.
+2. Run `MAME_SOURCE=/path/to/mame tools/build-browser.sh`; it creates the
+   ROM package, builds the ASM.js bundle, and installs both browser assets.
+   Set `WEBASSEMBLY=1` only when WASM is preferred.
 
 The checked-in `.LDA` files are VMS load records, not MAME ROM members. Use
 `python3 tools/inspect_lda.py` to inspect them; do not rename or zip them as

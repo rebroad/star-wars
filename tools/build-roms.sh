@@ -2,7 +2,7 @@
 set -eu
 
 repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-prefix=${PREFIX:-/data/data/com.termux/files/usr}
+prefix=${PREFIX:-/var/tmp}
 tool_root=${STAR_WARS_TOOL_ROOT:-$prefix/tmp/star-wars-tools}
 source_alias=$prefix/tmp/swsrc
 vector_prefix=$prefix/tmp/swvector

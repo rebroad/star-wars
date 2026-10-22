@@ -33,8 +33,7 @@ The supported browser route is a reduced MAME ASM.js build (no WASM required).
 Install Emscripten, obtain a MAME checkout outside this repository, and run:
 
 ```sh
-MAME_SOURCE=/path/to/mame tools/build-mame-wasm.sh
-cp roms-built/starwars1.zip web/roms/starwars.zip
+MAME_SOURCE=/path/to/mame tools/build-browser.sh
 ```
 
 The script writes `starwars-web.js` to `web/`; for a WASM build, set
