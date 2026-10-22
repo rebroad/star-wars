@@ -32,7 +32,16 @@ jobs:
           source "$EMSDK/emsdk_env.sh"
           embuilder build sdl3 sdl3_ttf
           git clone --depth 1 "$MAME_REPOSITORY" "$MAME_SOURCE"
-          tools/build-browser.sh
+          set -o pipefail
+          tools/build-browser.sh 2>&1 | tee "$RUNNER_TEMP/star-wars-browser-build.log"
+
+      - name: Upload browser build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: star-wars-browser-build-log
+          path: ${{ runner.temp }}/star-wars-browser-build.log
+          if-no-files-found: ignore
 
       - name: Smoke-test static browser assets
         run: |
