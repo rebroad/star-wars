@@ -1,0 +1,52 @@
+name: Build browser emulator
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Emscripten
+        working-directory: ${{ runner.temp }}
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+          ./emsdk/emsdk install latest
+          ./emsdk/emsdk activate latest
+          echo "${{ runner.temp }}/emsdk" >> "$GITHUB_PATH"
+          echo "EMSDK=${{ runner.temp }}/emsdk" >> "$GITHUB_ENV"
+
+      - name: Build ASM.js emulator
+        env:
+          MAME_SOURCE: ${{ runner.temp }}/mame
+          WEBASSEMBLY: "0"
+        run: |
+          source "$EMSDK/emsdk_env.sh"
+          embuilder build sdl3 sdl3_ttf
+          git clone --depth 1 https://github.com/mamedev/mame.git "$MAME_SOURCE"
+          tools/build-browser.sh
+
+      - name: Smoke-test static browser assets
+        run: |
+          python3 -m http.server 8000 --directory web >"$RUNNER_TEMP/star-wars-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          sleep 2
+          curl --fail --silent http://127.0.0.1:8000/index.html >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/starwars-web.js >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/roms/starwars.zip >/dev/null
+
+      - name: Upload emulator-only browser assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: star-wars-browser-emulator
+          path: |
+            web/index.html
+            web/mame-loader.js
+            web/README.md
+            web/starwars-web.js

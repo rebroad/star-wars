@@ -45,3 +45,8 @@ python3 -m http.server 8000 --directory web
 
 Open `http://127.0.0.1:8000/`. The included `web/mame-loader.js` starts the
 `starwars` driver and maps the MAME display canvas.
+
+GitHub Actions also builds the ASM.js emulator on pushes to `main` and via the
+manual `Build browser emulator` workflow. Its artifact intentionally excludes
+ROM contents; use `tools/build-browser.sh` locally to assemble the complete
+player from the repository archive.
