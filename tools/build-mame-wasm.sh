@@ -15,6 +15,10 @@ command -v emmake >/dev/null 2>&1 || {
     exit 2
 }
 cd "$mame_source"
+genie="$mame_source/3rdparty/genie/bin/linux/genie"
+if [ ! -x "$genie" ]; then
+    make -C 3rdparty/genie -j"$make_jobs" LDFLAGS= CFLAGS= CXXFLAGS=
+fi
 if [ "$webassembly" = 1 ]; then
     ldopts='-s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=24MB -Oz -s WARN_ON_UNDEFINED_SYMBOLS=0'
 else
