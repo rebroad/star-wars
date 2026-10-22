@@ -25,6 +25,6 @@
 
   const script = document.createElement('script');
   script.src = scriptName;
-  script.onerror = () => { status.textContent = 'Unable to load the MAME WebAssembly bundle.'; };
+  script.onerror = () => { status.textContent = 'Unable to load the MAME ASM.js bundle.'; };
   document.body.appendChild(script);
 })();

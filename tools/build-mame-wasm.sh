@@ -2,32 +2,21 @@
 set -eu
 
 mame_source=${MAME_SOURCE:?set MAME_SOURCE to a MAME checkout outside this repository}
-mame_build=${MAME_BUILD:-$mame_source.build}
 source_repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-if [ -d "$source_repo.build" ]; then
-    build_tree=$source_repo.build
-elif [ -d "$source_repo.make" ]; then
-    build_tree=$source_repo.make
-else
-    build_tree=$source_repo.build
-    mkdir -p "$build_tree"
-fi
+web_output=${WEB_OUTPUT:-$source_repo/web}
+webassembly=${WEBASSEMBLY:-0}
 
 command -v emmake >/dev/null 2>&1 || {
     echo "error: Emscripten emmake is required" >&2
     exit 2
 }
-command -v cpto >/dev/null 2>&1 || {
-    echo "error: cpto is required to synchronize the repository" >&2
-    exit 2
-}
-
-cpto "$source_repo" "$build_tree/star-wars"
-cpto "$mame_source" "$mame_build"
-mkdir -p "$build_tree/mame-wasm"
-cd "$mame_build"
+cd "$mame_source"
 emmake make -j2 SUBTARGET=starwars-web \
     SOURCES=src/mame/atari/starwars.cpp \
-    TARGETOS=wasm WEBASSEMBLY=1
-cp starwars-web.js starwars-web.wasm "$build_tree/mame-wasm/"
-printf '%s\n' "MAME WebAssembly output: $build_tree/mame-wasm"
+    TARGETOS=wasm WEBASSEMBLY="$webassembly"
+mkdir -p "$web_output"
+cp starwars-web.js "$web_output/"
+if [ "$webassembly" = 1 ]; then
+    cp starwars-web.wasm "$web_output/"
+fi
+printf '%s\n' "MAME browser output: $web_output (WEBASSEMBLY=$webassembly)"

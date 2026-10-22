@@ -1,0 +1,5 @@
+/roms-built/
+/web/roms/
+/web/starwars-web.js
+/web/starwars-web.wasm
+__pycache__/

@@ -29,7 +29,7 @@ def main() -> int:
     if failures:
         print(f"Validation failed: {failures} ROM member(s)", file=sys.stderr)
         return 1
-    print("Validated Atari Star Wars set 1 ROM directory")
+    print("Validated Atari Star Wars starwars1 ROM directory")
     return 0
 
 
