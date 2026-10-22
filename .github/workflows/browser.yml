@@ -22,11 +22,11 @@ jobs:
           echo "${{ runner.temp }}/emsdk" >> "$GITHUB_PATH"
           echo "EMSDK=${{ runner.temp }}/emsdk" >> "$GITHUB_ENV"
 
-      - name: Build ASM.js emulator
+      - name: Build WebAssembly emulator
         env:
           MAME_SOURCE: ${{ runner.temp }}/mame
           MAME_REPOSITORY: https://github.com/rebroad/mame.git
-          WEBASSEMBLY: "0"
+          WEBASSEMBLY: "1"
           MAME_JOBS: "4"
         run: |
           source "$EMSDK/emsdk_env.sh"

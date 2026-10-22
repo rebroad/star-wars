@@ -1,6 +1,6 @@
 # Browser player
 
-This is a static shell for a reduced MAME ASM.js build. It is not a
+This is a static shell for a reduced MAME WebAssembly build. It is not a
 JavaScript 6809 reimplementation: MAME supplies the Atari hardware model,
 vector display, sound, mathbox, and controls.
 
@@ -9,8 +9,8 @@ vector display, sound, mathbox, and controls.
 1. Obtain a MAME source checkout outside this repository and install
    Emscripten.
 2. Run `MAME_SOURCE=/path/to/mame tools/build-browser.sh`; it creates the
-   ROM package, builds the ASM.js bundle, and installs both browser assets.
-   Set `WEBASSEMBLY=1` only when WASM is preferred.
+   ROM package, builds the JavaScript/WebAssembly bundle, and installs both
+   browser assets. Set `WEBASSEMBLY=0` only when ASM.js is specifically needed.
 
 The checked-in `.LDA` files are VMS load records, not MAME ROM members. Use
 `python3 tools/inspect_lda.py` to inspect them; do not rename or zip them as

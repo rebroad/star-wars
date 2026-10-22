@@ -29,15 +29,16 @@ writes `roms-built/starwars1.zip`.
 
 ## Run in a browser
 
-The supported browser route is a reduced MAME ASM.js build (no WASM required).
+The supported browser route is a reduced MAME WebAssembly build.
 Install Emscripten, obtain a MAME checkout outside this repository, and run:
 
 ```sh
 MAME_SOURCE=/path/to/mame tools/build-browser.sh
 ```
 
-The script writes `starwars-web.js` to `web/`; for a WASM build, set
-`WEBASSEMBLY=1`. Serve the result over HTTP:
+The script writes `starwars-web.js` and `starwars-web.wasm` to `web/`.
+Set `WEBASSEMBLY=0` only when an ASM.js build is specifically required.
+Serve the result over HTTP:
 
 ```sh
 python3 -m http.server 8000 --directory web
@@ -46,7 +47,7 @@ python3 -m http.server 8000 --directory web
 Open `http://127.0.0.1:8000/`. The included `web/mame-loader.js` starts the
 `starwars` driver and maps the MAME display canvas.
 
-GitHub Actions also builds the ASM.js emulator on pushes to `main` and via the
+GitHub Actions also builds the WebAssembly emulator on pushes to `main` and via the
 manual `Build browser emulator` workflow. Its artifact intentionally excludes
 ROM contents; use `tools/build-browser.sh` locally to assemble the complete
 player from the repository archive.

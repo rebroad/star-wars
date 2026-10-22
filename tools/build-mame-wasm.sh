@@ -4,7 +4,7 @@ set -eu
 mame_source=${MAME_SOURCE:?set MAME_SOURCE to a MAME checkout outside this repository}
 source_repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 web_output=${WEB_OUTPUT:-$source_repo/web}
-webassembly=${WEBASSEMBLY:-0}
+webassembly=${WEBASSEMBLY:-1}
 make_jobs=${MAME_JOBS:-2}
 subtarget=${MAME_SUBTARGET:-starwarswasm}
 driver=${MAME_DRIVER:-starwars}
