@@ -30,7 +30,6 @@ jobs:
           MAME_JOBS: "4"
         run: |
           source "$EMSDK/emsdk_env.sh"
-          embuilder build sdl3 sdl3_ttf
           git clone --depth 1 "$MAME_REPOSITORY" "$MAME_SOURCE"
           set -o pipefail
           tools/build-browser.sh 2>&1 | tee "$RUNNER_TEMP/star-wars-browser-build.log"
