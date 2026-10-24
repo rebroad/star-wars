@@ -5,6 +5,15 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
 jobs:
   browser:
     runs-on: ubuntu-latest
@@ -124,3 +133,29 @@ jobs:
             web/roms.js
             web/roms.data
             web/mame_performance_warning.js
+
+  deploy:
+    needs: browser
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download verified browser assets
+        uses: actions/download-artifact@v4
+        with:
+          name: star-wars-browser-emulator
+          path: site
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
