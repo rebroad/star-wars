@@ -17,7 +17,7 @@
   }
 
   window.Module.arguments = ['starwars', '-rompath', '/roms'];
-  window.Module.locateFile = name => name.endsWith('.wasm') ? `./${name}` : name;
+  window.Module.locateFile = name => name.endsWith('.wasm') ? './starwars-web.wasm' : name;
   window.Module.preRun = [() => {
     FS.mkdir('/roms');
     FS.writeFile('/roms/starwars.zip', window.romBytes);

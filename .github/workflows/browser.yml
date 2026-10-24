@@ -53,6 +53,43 @@ jobs:
           curl --fail --silent http://127.0.0.1:8000/starwars-web.wasm >/dev/null
           curl --fail --silent http://127.0.0.1:8000/roms/starwars.zip >/dev/null
 
+      - name: Smoke-test emulator in a headless browser
+        run: |
+          npm install --no-save --ignore-scripts puppeteer@24.26.1
+          npx puppeteer browsers install chrome-headless-shell
+          python3 -m http.server 8000 --directory web >"$RUNNER_TEMP/star-wars-http-runtime.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          node <<'NODE'
+          const puppeteer = require('puppeteer');
+
+          (async () => {
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-dev-shm-usage']
+            });
+            const page = await browser.newPage();
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+            await page.goto('http://127.0.0.1:8000/', { waitUntil: 'load', timeout: 120000 });
+            await page.waitForFunction(() => window.Module && window.Module.calledRun === true, { timeout: 120000 });
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            const state = await page.evaluate(() => ({
+              width: document.querySelector('#screen')?.width,
+              height: document.querySelector('#screen')?.height,
+              status: document.querySelector('#status')?.textContent
+            }));
+            await browser.close();
+            if (errors.length || state.width <= 0 || state.height <= 0) {
+              throw new Error(`Runtime smoke test failed: ${JSON.stringify({ errors, state })}`);
+            }
+            console.log(`Runtime smoke test passed: ${state.width}x${state.height}`);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
       - name: Upload emulator-only browser assets
         uses: actions/upload-artifact@v4
         with:
