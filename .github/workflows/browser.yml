@@ -78,15 +78,22 @@ jobs:
               if (message.type() === 'error') errors.push(message.text());
             });
             await page.goto('http://127.0.0.1:8000/', { waitUntil: 'load', timeout: 120000 });
-            await page.waitForFunction(() => window.mameRuntimeReady === true, { timeout: 120000 });
+            await page.waitForFunction(() => (
+              window.mameRuntimeReady === true ||
+              window.mameStartupError ||
+              (document.querySelector('#status')?.textContent || '').includes('Emulator error')
+            ), { timeout: 30000 });
             await new Promise(resolve => setTimeout(resolve, 3000));
             const state = await page.evaluate(() => ({
               width: document.querySelector('#canvas')?.width,
               height: document.querySelector('#canvas')?.height,
-              status: document.querySelector('#status')?.textContent
+              status: document.querySelector('#status')?.textContent,
+              runtimeReady: window.mameRuntimeReady === true,
+              startupError: window.mameStartupError || null,
+              calledRun: window.Module?.calledRun === true
             }));
             await browser.close();
-            if (errors.length || state.width <= 0 || state.height <= 0) {
+            if (errors.length || !state.runtimeReady || state.startupError || state.width <= 0 || state.height <= 0) {
               throw new Error(`Runtime smoke test failed: ${JSON.stringify({ errors, state })}`);
             }
             console.log(`Runtime smoke test passed: ${state.width}x${state.height}`);

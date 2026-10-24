@@ -22,6 +22,10 @@
     window.mameRuntimeReady = true;
     status.textContent = 'MAME runtime initialized';
   };
+  window.Module.onAbort = reason => {
+    window.mameStartupError = `MAME aborted: ${reason}`;
+    status.textContent = window.mameStartupError;
+  };
   window.Module.preRun = [() => {
     FS.mkdir('/roms');
     FS.writeFile('/roms/starwars.zip', window.romBytes);
@@ -29,6 +33,9 @@
 
   const script = document.createElement('script');
   script.src = scriptName;
-  script.onerror = () => { status.textContent = 'Unable to load the MAME WebAssembly bundle.'; };
+  script.onerror = () => {
+    window.mameStartupError = 'Unable to load the MAME WebAssembly bundle.';
+    status.textContent = window.mameStartupError;
+  };
   document.body.appendChild(script);
 })();
