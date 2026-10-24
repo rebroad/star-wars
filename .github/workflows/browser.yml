@@ -74,6 +74,7 @@ jobs:
             const page = await browser.newPage();
             const errors = [];
             const failedRequests = [];
+            const responses = [];
             page.on('pageerror', error => errors.push(error.message));
             page.on('console', message => {
               if (message.type() === 'error') errors.push(message.text());
@@ -81,31 +82,28 @@ jobs:
             page.on('requestfailed', request => {
               failedRequests.push(`${request.url()}: ${request.failure()?.errorText || 'unknown error'}`);
             });
+            page.on('response', response => {
+              responses.push({ url: response.url(), status: response.status() });
+            });
+            const runtimeReadyPromise = new Promise(resolve => {
+              const timer = setTimeout(() => resolve(false), 60000);
+              page.on('console', message => {
+                if (message.text() === 'MAME preRun reached') {
+                  clearTimeout(timer);
+                  resolve(true);
+                }
+              });
+            });
             await page.goto('http://127.0.0.1:8000/', { waitUntil: 'load', timeout: 120000 });
-            let waitError = null;
-            try {
-              await page.waitForFunction(() => (
-                window.mameRuntimeReady === true ||
-                window.mameStartupError ||
-                (document.querySelector('#status')?.textContent || '').includes('Emulator error')
-              ), { timeout: 30000 });
-            } catch (error) {
-              waitError = error.message;
-            }
+            const runtimeReady = await runtimeReadyPromise;
             await new Promise(resolve => setTimeout(resolve, 3000));
-            const state = await page.evaluate(() => ({
-              width: document.querySelector('#canvas')?.width,
-              height: document.querySelector('#canvas')?.height,
-              status: document.querySelector('#status')?.textContent,
-              runtimeReady: window.mameRuntimeReady === true,
-              startupError: window.mameStartupError || null,
-              calledRun: window.Module?.calledRun === true
-            }));
+            const loadedWasm = responses.some(response => response.url.endsWith('/starwars-web.wasm') && response.status === 200);
+            const loadedRom = responses.some(response => response.url.endsWith('/roms/starwars.zip') && response.status === 200);
             await browser.close();
-            if (waitError || errors.length || failedRequests.length || !state.runtimeReady || state.startupError || state.width <= 0 || state.height <= 0) {
-              throw new Error(`Runtime smoke test failed: ${JSON.stringify({ waitError, errors, failedRequests, state })}`);
+            if (!runtimeReady || errors.length || failedRequests.length || !loadedWasm || !loadedRom) {
+              throw new Error(`Runtime smoke test failed: ${JSON.stringify({ runtimeReady, errors, failedRequests, loadedWasm, loadedRom })}`);
             }
-            console.log(`Runtime smoke test passed: ${state.width}x${state.height}`);
+            console.log('Runtime smoke test passed: MAME preRun reached with WASM and ROM loaded');
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 

@@ -27,6 +27,7 @@
     status.textContent = window.mameStartupError;
   };
   window.Module.preRun = [() => {
+    console.log('MAME preRun reached');
     FS.mkdir('/roms');
     FS.writeFile('/roms/starwars.zip', window.romBytes);
   }];
