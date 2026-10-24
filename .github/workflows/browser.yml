@@ -78,7 +78,7 @@ jobs:
               if (message.type() === 'error') errors.push(message.text());
             });
             await page.goto('http://127.0.0.1:8000/', { waitUntil: 'load', timeout: 120000 });
-            await page.waitForFunction(() => window.Module && window.Module.calledRun === true, { timeout: 120000 });
+            await page.waitForFunction(() => window.mameRuntimeReady === true, { timeout: 120000 });
             await new Promise(resolve => setTimeout(resolve, 3000));
             const state = await page.evaluate(() => ({
               width: document.querySelector('#canvas')?.width,
