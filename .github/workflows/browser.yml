@@ -81,8 +81,8 @@ jobs:
             await page.waitForFunction(() => window.Module && window.Module.calledRun === true, { timeout: 120000 });
             await new Promise(resolve => setTimeout(resolve, 3000));
             const state = await page.evaluate(() => ({
-              width: document.querySelector('#screen')?.width,
-              height: document.querySelector('#screen')?.height,
+              width: document.querySelector('#canvas')?.width,
+              height: document.querySelector('#canvas')?.height,
               status: document.querySelector('#status')?.textContent
             }));
             await browser.close();
