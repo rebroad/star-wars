@@ -121,6 +121,54 @@ jobs:
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 
+      - name: Smoke-test touch controls in mobile emulation
+        run: |
+          chrome_path=$(find "$RUNNER_TEMP/puppeteer" -type f -name chrome-headless-shell -perm -u+x | head -n 1)
+          test -n "$chrome_path"
+          CHROME_PATH="$chrome_path" node <<'NODE'
+          const puppeteer = require('puppeteer');
+
+          (async () => {
+            const browser = await puppeteer.launch({
+              headless: true,
+              executablePath: process.env.CHROME_PATH,
+              args: ['--no-sandbox', '--disable-dev-shm-usage']
+            });
+            const page = await browser.newPage();
+            await page.emulate({
+              viewport: { width: 390, height: 844, isMobile: true, hasTouch: true },
+              userAgent: 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/131 Mobile Safari/537.36'
+            });
+            const touchMarker = new Promise(resolve => {
+              const timer = setTimeout(() => resolve(false), 30000);
+              page.on('console', message => {
+                if (message.text() === '[TOUCH] controls enabled') {
+                  clearTimeout(timer);
+                  resolve(true);
+                }
+              });
+            });
+            await page.goto('http://127.0.0.1:8000/', { waitUntil: 'domcontentloaded', timeout: 120000 });
+            const enabled = await touchMarker;
+            const state = await page.evaluate(() => {
+              const controls = document.getElementById('touch-controls');
+              const screen = document.getElementById('game-screen');
+              const fire = document.getElementById('fire-button');
+              return {
+                enabled: window.touchControlsEnabled === true,
+                controlsVisible: getComputedStyle(controls).display !== 'none',
+                controlsPresent: !!controls && !!fire,
+                screenRatio: screen ? screen.getBoundingClientRect().width / screen.getBoundingClientRect().height : 0
+              };
+            });
+            await browser.close();
+            if (!enabled || !state.enabled || !state.controlsVisible || !state.controlsPresent || Math.abs(state.screenRatio - 4 / 3) > 0.03) {
+              throw new Error(`Mobile touch smoke test failed: ${JSON.stringify({ enabled, state })}`);
+            }
+            console.log(`Mobile touch smoke test passed: controls visible, game ratio ${state.screenRatio.toFixed(3)}`);
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
       - name: Upload emulator-only browser assets
         uses: actions/upload-artifact@v4
         with:
