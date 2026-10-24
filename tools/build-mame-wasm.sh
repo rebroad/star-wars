@@ -27,7 +27,7 @@ fi
 # The fork has sources that include headers as "osd/..." while its generated
 # projects only add src/osd.  Keep the fix in this wrapper so the dependency
 # checkout remains untouched and callers can still add their own flags.
-source_include="-I$mame_source/src -I$mame_source/3rdparty/zlib"
+source_include="-I$mame_source/src -I$mame_source/3rdparty/zlib -DVVF_STATS=0"
 cflags="${CFLAGS:-} $source_include"
 cxxflags="${CXXFLAGS:-} $source_include"
 emmake make -j"$make_jobs" \
