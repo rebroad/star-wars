@@ -19,13 +19,14 @@ command -v emmake >/dev/null 2>&1 || {
 }
 
 "$repo/tools/build-roms.sh"
-MAME_SOURCE="$mame_source" WEB_OUTPUT="$repo/web" \
+MAME_SOURCE="$mame_source" WEB_OUTPUT="$repo/web" MAME_JOBS="${MAME_JOBS:-2}" \
     "$repo/tools/build-mame-wasm.sh"
-mkdir -p "$repo/web/roms"
-cp "$repo/roms-built/starwars1.zip" "$repo/web/roms/starwars.zip"
 
-test -s "$repo/web/starwars-web.js"
-test -s "$repo/web/roms/starwars.zip"
+test -s "$repo/web/starwarswasm.js"
+test -s "$repo/web/starwarswasm.wasm"
+test -s "$repo/web/roms.js"
+test -s "$repo/web/roms.data"
+test -s "$repo/web/index.html"
 printf '%s\n' "Browser assets are ready in $repo/web"
 printf '%s\n' "Run: python3 -m http.server 8000 --directory $repo/web"
 printf '%s\n' "Open: http://127.0.0.1:8000/"

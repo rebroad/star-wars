@@ -4,49 +4,40 @@ set -eu
 mame_source=${MAME_SOURCE:?set MAME_SOURCE to a MAME checkout outside this repository}
 source_repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 web_output=${WEB_OUTPUT:-$source_repo/web}
-webassembly=${WEBASSEMBLY:-1}
 make_jobs=${MAME_JOBS:-2}
-subtarget=${MAME_SUBTARGET:-starwarswasm}
-driver=${MAME_DRIVER:-starwars}
-mame_config=${MAME_CONFIG:-release32}
+rom_archive=${MAME_ROM_PATH:-$source_repo/roms-built/starwars1.zip}
+source_include="-I$mame_source/src -I$mame_source/3rdparty/zlib -DVVF_STATS=0 -Dprint_color_stats\\(...\\)=\\(\\(void\\)0\\)"
 
 command -v emmake >/dev/null 2>&1 || {
     echo "error: Emscripten emmake is required" >&2
     exit 2
 }
-cd "$mame_source"
-genie="$mame_source/3rdparty/genie/bin/linux/genie"
-if [ ! -x "$genie" ]; then
-    make -C 3rdparty/genie -j"$make_jobs" LDFLAGS= CFLAGS= CXXFLAGS=
+if [ ! -x "$mame_source/build_web.sh" ]; then
+    echo "error: MAME_SOURCE/build_web.sh is required" >&2
+    exit 2
 fi
-if [ "$webassembly" = 1 ]; then
-    ldopts='-s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=24MB -Oz -s WARN_ON_UNDEFINED_SYMBOLS=0'
-else
-    ldopts='-s FORCE_FILESYSTEM=1 -s WARN_ON_UNDEFINED_SYMBOLS=0'
+if [ ! -s "$rom_archive" ]; then
+    echo "error: ROM archive is missing: $rom_archive" >&2
+    exit 2
 fi
-# The fork has sources that include headers as "osd/..." while its generated
-# projects only add src/osd.  Keep the fix in this wrapper so the dependency
-# checkout remains untouched and callers can still add their own flags.
-# The fork's VVF implementation has one unguarded stats-only call; replace
-# that optional diagnostic with a no-op when VVF statistics are disabled.
-source_include="-I$mame_source/src -I$mame_source/3rdparty/zlib -DVVF_STATS=0 -Dprint_color_stats\\(...\\)=\\(\\(void\\)0\\)"
-cflags="${CFLAGS:-} $source_include"
-cxxflags="${CXXFLAGS:-} $source_include"
-emmake make -j"$make_jobs" \
-    SUBTARGET="$subtarget" \
-    DRIVERS="$driver" \
-    WEBASSEMBLY="$webassembly" \
-    TOOLS=0 REGENIE=1 NOWERROR=1 \
-    SYMBOLS=0 SYMLEVEL=0 STRIP_SYMBOLS=1 NO_OPENGL=1 \
-    config="$mame_config" LDOPTS="$ldopts" \
-    CFLAGS="$cflags" CXXFLAGS="$cxxflags"
+
+# Let the fork's maintained web build script own Emscripten flags, generated
+# HTML, and file_packager output. This wrapper supplies the reproducible ROM
+# archive and copies the standard preload artifacts into this repository.
+MAME_ROM_PATH="$rom_archive" MAME_GAME=starwars1 \
+    CFLAGS="${CFLAGS:-} $source_include" \
+    CXXFLAGS="${CXXFLAGS:-} $source_include" \
+    "$mame_source/build_web.sh" \
+    -no-server -no-compress -includeroms --jobs "$make_jobs"
+
+mame_web_output=${MAME_WEB_OUTPUT:-$mame_source/webdist}
 mkdir -p "$web_output"
-artifact_base="$subtarget"
-if [ ! -f "$artifact_base.js" ] && [ -f "mame$artifact_base.js" ]; then
-    artifact_base="mame$artifact_base"
-fi
-cp "$artifact_base.js" "$web_output/starwars-web.js"
-if [ "$webassembly" = 1 ]; then
-    cp "$artifact_base.wasm" "$web_output/starwars-web.wasm"
-fi
-printf '%s\n' "MAME browser output: $web_output (target=$subtarget WEBASSEMBLY=$webassembly)"
+for artifact in index.html starwarswasm.js starwarswasm.wasm roms.js roms.data; do
+    if [ ! -s "$mame_web_output/$artifact" ]; then
+        echo "error: MAME web artifact is missing: $mame_web_output/$artifact" >&2
+        exit 1
+    fi
+    cp "$mame_web_output/$artifact" "$web_output/$artifact"
+done
+
+printf '%s\n' "MAME browser output: $web_output (standard build_web.sh preload flow)"

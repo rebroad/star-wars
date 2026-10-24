@@ -2,4 +2,8 @@
 /web/roms/
 /web/starwars-web.js
 /web/starwars-web.wasm
+/web/starwarswasm.js
+/web/starwarswasm.wasm
+/web/roms.js
+/web/roms.data
 __pycache__/

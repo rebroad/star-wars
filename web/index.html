@@ -1,31 +1,4 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Atari Star Wars</title>
-  <style>
-    :root { color-scheme: dark; font: 16px system-ui, sans-serif; }
-    body { margin: 0; background: #050505; color: #eee; display: grid; place-items: center; min-height: 100vh; }
-    main { width: min(960px, 100%); text-align: center; }
-    canvas { width: min(960px, 100%); aspect-ratio: 4 / 3; background: #000; image-rendering: pixelated; }
-    p { color: #aaa; }
-  </style>
-</head>
-<body>
-  <main>
-    <h1>Atari Star Wars</h1>
-    <canvas id="canvas" width="800" height="600" aria-label="MAME display"></canvas>
-    <p id="status">Place the generated MAME WebAssembly bundle and validated ROM package beside this page.</p>
-  </main>
-  <script>
-    const status = document.querySelector('#status');
-    window.Module = {
-      canvas: document.querySelector('#canvas'),
-      print: text => { status.textContent = text; console.log(text); },
-      printErr: text => { status.textContent = `Emulator error: ${text}`; console.error(text); }
-    };
-  </script>
-  <script src="./mame-loader.js"></script>
-</body>
-</html>
+<meta charset="utf-8">
+<title>Atari Star Wars</title>
+<p>Run <code>tools/build-browser.sh</code> to generate the MAME web page here.</p>

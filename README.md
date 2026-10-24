@@ -36,16 +36,18 @@ Install Emscripten, obtain a MAME checkout outside this repository, and run:
 MAME_SOURCE=/path/to/mame tools/build-browser.sh
 ```
 
-The script writes `starwars-web.js` and `starwars-web.wasm` to `web/`.
-Set `WEBASSEMBLY=0` only when an ASM.js build is specifically required.
+The script invokes the MAME fork's maintained `build_web.sh`, which writes
+`starwarswasm.js`, `starwarswasm.wasm`, `roms.js`, `roms.data`, and its
+generated `index.html` to `web/`. The ROM archive is embedded through
+Emscripten's standard preload data; no custom ZIP loader is used. The default
+is single-threaded WebAssembly; workers are not enabled.
 Serve the result over HTTP:
 
 ```sh
 python3 -m http.server 8000 --directory web
 ```
 
-Open `http://127.0.0.1:8000/`. The included `web/mame-loader.js` starts the
-`starwars1` driver and maps the MAME display canvas.
+Open `http://127.0.0.1:8000/`.
 
 GitHub Actions also builds the WebAssembly emulator on pushes to `main` and via the
 manual `Build browser emulator` workflow. Its artifact intentionally excludes
