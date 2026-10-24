@@ -43,5 +43,13 @@ for artifact in index.html "$artifact_base.js" "$artifact_base.wasm" roms.js rom
     fi
     cp "$mame_web_output/$artifact" "$web_output/$artifact"
 done
+if [ ! -s "$mame_web_output/mame_performance_warning.js" ]; then
+    echo "error: MAME web artifact is missing: $mame_web_output/mame_performance_warning.js" >&2
+    exit 1
+fi
+cp "$mame_web_output/mame_performance_warning.js" "$web_output/mame_performance_warning.js"
+if [ "$artifact_base" != starwarswasm ]; then
+    cp "$mame_web_output/$artifact_base.wasm" "$web_output/starwarswasm.wasm"
+fi
 
 printf '%s\n' "MAME browser output: $web_output (standard build_web.sh preload flow)"

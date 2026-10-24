@@ -50,8 +50,10 @@ jobs:
           curl --fail --silent http://127.0.0.1:8000/index.html >/dev/null
           curl --fail --silent http://127.0.0.1:8000/mamestarwarswasm.js >/dev/null
           curl --fail --silent http://127.0.0.1:8000/mamestarwarswasm.wasm >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/starwarswasm.wasm >/dev/null
           curl --fail --silent http://127.0.0.1:8000/roms.js >/dev/null
           curl --fail --silent http://127.0.0.1:8000/roms.data >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/mame_performance_warning.js >/dev/null
 
       - name: Smoke-test emulator in a headless browser
         run: |
@@ -118,3 +120,4 @@ jobs:
             web/mamestarwarswasm.wasm
             web/roms.js
             web/roms.data
+            web/mame_performance_warning.js

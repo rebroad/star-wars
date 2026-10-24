@@ -6,6 +6,8 @@
 /web/starwarswasm.wasm
 /web/mamestarwarswasm.js
 /web/mamestarwarswasm.wasm
+/web/starwarswasm.wasm
 /web/roms.js
 /web/roms.data
+/web/mame_performance_warning.js
 __pycache__/
