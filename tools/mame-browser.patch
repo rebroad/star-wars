@@ -1,0 +1,10 @@
+diff --git a/src/osd/osdcore.cpp b/src/osd/osdcore.cpp
+index 1d5a5cc..0000000 100644
+--- a/src/osd/osdcore.cpp
++++ b/src/osd/osdcore.cpp
+@@ -9,4 +9,4 @@
+ 
+ // For running_machine and attotime
+-#include "emu/machine.h"
++#include "emu/emu.h"
+ #include "emu/attotime.h"
