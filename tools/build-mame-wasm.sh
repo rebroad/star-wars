@@ -31,8 +31,12 @@ MAME_ROM_PATH="$rom_archive" MAME_GAME=starwars1 \
     -no-server -no-compress -includeroms --jobs "$make_jobs"
 
 mame_web_output=${MAME_WEB_OUTPUT:-$mame_source/webdist}
+artifact_base=starwarswasm
+if [ ! -s "$mame_web_output/$artifact_base.js" ] && [ -s "$mame_web_output/mame$artifact_base.js" ]; then
+    artifact_base="mame$artifact_base"
+fi
 mkdir -p "$web_output"
-for artifact in index.html starwarswasm.js starwarswasm.wasm roms.js roms.data; do
+for artifact in index.html "$artifact_base.js" "$artifact_base.wasm" roms.js roms.data; do
     if [ ! -s "$mame_web_output/$artifact" ]; then
         echo "error: MAME web artifact is missing: $mame_web_output/$artifact" >&2
         exit 1

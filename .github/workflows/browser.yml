@@ -48,8 +48,8 @@ jobs:
           trap 'kill "$server_pid"' EXIT
           sleep 2
           curl --fail --silent http://127.0.0.1:8000/index.html >/dev/null
-          curl --fail --silent http://127.0.0.1:8000/starwarswasm.js >/dev/null
-          curl --fail --silent http://127.0.0.1:8000/starwarswasm.wasm >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/mamestarwarswasm.js >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/mamestarwarswasm.wasm >/dev/null
           curl --fail --silent http://127.0.0.1:8000/roms.js >/dev/null
           curl --fail --silent http://127.0.0.1:8000/roms.data >/dev/null
 
@@ -97,7 +97,7 @@ jobs:
             await page.goto('http://127.0.0.1:8000/', { waitUntil: 'load', timeout: 120000 });
             const runtimeReady = await runtimeReadyPromise;
             await new Promise(resolve => setTimeout(resolve, 3000));
-            const loadedWasm = responses.some(response => response.url.endsWith('/starwarswasm.wasm') && response.status === 200);
+            const loadedWasm = responses.some(response => response.url.endsWith('/mamestarwarswasm.wasm') && response.status === 200);
             const loadedRom = responses.some(response => response.url.endsWith('/roms.data') && response.status === 200);
             await browser.close();
             if (!runtimeReady || errors.length || failedRequests.length || !loadedWasm || !loadedRom) {
@@ -114,7 +114,7 @@ jobs:
           path: |
             web/index.html
             web/README.md
-            web/starwarswasm.js
-            web/starwarswasm.wasm
+            web/mamestarwarswasm.js
+            web/mamestarwarswasm.wasm
             web/roms.js
             web/roms.data

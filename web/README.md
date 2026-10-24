@@ -9,7 +9,8 @@ mathbox, and controls; this is not a JavaScript 6809 reimplementation.
 1. Obtain the MAME fork checkout and install Emscripten 3.1.35.
 2. Run `MAME_SOURCE=/path/to/mame tools/build-browser.sh`; it creates the
    ROM archive, invokes MAME's `build_web.sh`, and copies its generated page,
-   WebAssembly bundle, and `roms.data` preload into this directory.
+   WebAssembly bundle, and `roms.data` preload into this directory. The
+   current fork names the bundle `mamestarwarswasm.js/.wasm`.
 
 The checked-in `.LDA` files are VMS load records, not MAME ROM members. Use
 `python3 tools/inspect_lda.py` to inspect them; do not rename or zip them as

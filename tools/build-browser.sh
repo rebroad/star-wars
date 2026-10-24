@@ -22,8 +22,8 @@ command -v emmake >/dev/null 2>&1 || {
 MAME_SOURCE="$mame_source" WEB_OUTPUT="$repo/web" MAME_JOBS="${MAME_JOBS:-2}" \
     "$repo/tools/build-mame-wasm.sh"
 
-test -s "$repo/web/starwarswasm.js"
-test -s "$repo/web/starwarswasm.wasm"
+test -s "$repo/web/mamestarwarswasm.js" || test -s "$repo/web/starwarswasm.js"
+test -s "$repo/web/mamestarwarswasm.wasm" || test -s "$repo/web/starwarswasm.wasm"
 test -s "$repo/web/roms.js"
 test -s "$repo/web/roms.data"
 test -s "$repo/web/index.html"

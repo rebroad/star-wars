@@ -36,9 +36,10 @@ Install Emscripten, obtain a MAME checkout outside this repository, and run:
 MAME_SOURCE=/path/to/mame tools/build-browser.sh
 ```
 
-The script invokes the MAME fork's maintained `build_web.sh`, which writes
-`starwarswasm.js`, `starwarswasm.wasm`, `roms.js`, `roms.data`, and its
-generated `index.html` to `web/`. The ROM archive is embedded through
+The script invokes the MAME fork's maintained `build_web.sh`, which writes the
+generated MAME JavaScript/WebAssembly pair (currently
+`mamestarwarswasm.js/.wasm`), `roms.js`, `roms.data`, and its generated
+`index.html` to `web/`. The ROM archive is embedded through
 Emscripten's standard preload data; no custom ZIP loader is used. The default
 is single-threaded WebAssembly; workers are not enabled.
 Serve the result over HTTP:
