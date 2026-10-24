@@ -29,7 +29,7 @@ fi
 # checkout remains untouched and callers can still add their own flags.
 # The fork's VVF implementation has one unguarded stats-only call; replace
 # that optional diagnostic with a no-op when VVF statistics are disabled.
-source_include="-I$mame_source/src -I$mame_source/3rdparty/zlib -DVVF_STATS=0 -Dprint_color_stats(...)=((void)0)"
+source_include="-I$mame_source/src -I$mame_source/3rdparty/zlib -DVVF_STATS=0 -include $source_repo/tools/browser-vvf-compat.h"
 cflags="${CFLAGS:-} $source_include"
 cxxflags="${CXXFLAGS:-} $source_include"
 emmake make -j"$make_jobs" \
