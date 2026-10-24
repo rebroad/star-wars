@@ -19,12 +19,6 @@ genie="$mame_source/3rdparty/genie/bin/linux/genie"
 if [ ! -x "$genie" ]; then
     make -C 3rdparty/genie -j"$make_jobs" LDFLAGS= CFLAGS= CXXFLAGS=
 fi
-# Apply repository-owned compatibility patches to the selected MAME fork.
-# They are intentionally kept here rather than committed to the dependency.
-browser_patch="$source_repo/tools/mame-browser.patch"
-if ! grep -q '#include "emu/emu.h"' src/osd/osdcore.cpp; then
-    git apply "$browser_patch"
-fi
 if [ "$webassembly" = 1 ]; then
     ldopts='-s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=24MB -Oz -s WARN_ON_UNDEFINED_SYMBOLS=0'
 else
@@ -47,8 +41,12 @@ emmake make -j"$make_jobs" \
     config="$mame_config" LDOPTS="$ldopts" \
     CFLAGS="$cflags" CXXFLAGS="$cxxflags"
 mkdir -p "$web_output"
-cp "$subtarget.js" "$web_output/starwars-web.js"
+artifact_base="$subtarget"
+if [ ! -f "$artifact_base.js" ] && [ -f "mame$artifact_base.js" ]; then
+    artifact_base="mame$artifact_base"
+fi
+cp "$artifact_base.js" "$web_output/starwars-web.js"
 if [ "$webassembly" = 1 ]; then
-    cp "$subtarget.wasm" "$web_output/starwars-web.wasm"
+    cp "$artifact_base.wasm" "$web_output/starwars-web.wasm"
 fi
 printf '%s\n' "MAME browser output: $web_output (target=$subtarget WEBASSEMBLY=$webassembly)"
