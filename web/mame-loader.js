@@ -16,7 +16,7 @@
     return;
   }
 
-  window.Module.arguments = ['starwars', '-rompath', '/roms'];
+  window.Module.arguments = ['starwars1', '-rompath', '/roms'];
   window.Module.locateFile = name => name.endsWith('.wasm') ? './starwars-web.wasm' : name;
   window.Module.preRun = [() => {
     FS.mkdir('/roms');
