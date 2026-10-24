@@ -73,16 +73,25 @@ jobs:
             });
             const page = await browser.newPage();
             const errors = [];
+            const failedRequests = [];
             page.on('pageerror', error => errors.push(error.message));
             page.on('console', message => {
               if (message.type() === 'error') errors.push(message.text());
             });
+            page.on('requestfailed', request => {
+              failedRequests.push(`${request.url()}: ${request.failure()?.errorText || 'unknown error'}`);
+            });
             await page.goto('http://127.0.0.1:8000/', { waitUntil: 'load', timeout: 120000 });
-            await page.waitForFunction(() => (
-              window.mameRuntimeReady === true ||
-              window.mameStartupError ||
-              (document.querySelector('#status')?.textContent || '').includes('Emulator error')
-            ), { timeout: 30000 });
+            let waitError = null;
+            try {
+              await page.waitForFunction(() => (
+                window.mameRuntimeReady === true ||
+                window.mameStartupError ||
+                (document.querySelector('#status')?.textContent || '').includes('Emulator error')
+              ), { timeout: 30000 });
+            } catch (error) {
+              waitError = error.message;
+            }
             await new Promise(resolve => setTimeout(resolve, 3000));
             const state = await page.evaluate(() => ({
               width: document.querySelector('#canvas')?.width,
@@ -93,8 +102,8 @@ jobs:
               calledRun: window.Module?.calledRun === true
             }));
             await browser.close();
-            if (errors.length || !state.runtimeReady || state.startupError || state.width <= 0 || state.height <= 0) {
-              throw new Error(`Runtime smoke test failed: ${JSON.stringify({ errors, state })}`);
+            if (waitError || errors.length || failedRequests.length || !state.runtimeReady || state.startupError || state.width <= 0 || state.height <= 0) {
+              throw new Error(`Runtime smoke test failed: ${JSON.stringify({ waitError, errors, failedRequests, state })}`);
             }
             console.log(`Runtime smoke test passed: ${state.width}x${state.height}`);
           })().catch(error => { console.error(error); process.exit(1); });
